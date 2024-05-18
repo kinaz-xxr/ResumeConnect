@@ -64,7 +64,7 @@ def getFile():
     if not s3URL:
         return abort(400, "Missing s3 URL in the query parameter")
 
-    match = re.match(r"^https://(.+?)\.s3\.amazonaws\.com/(.+)$", s3URL)
+    match = re.match(match = re.match(r'^https://(.+?)\.s3\.(.+?)\.amazonaws\.com/(.+)$', s3URL))
     if not match:
         return abort(400, "Invalid S3 URL format.")
     
