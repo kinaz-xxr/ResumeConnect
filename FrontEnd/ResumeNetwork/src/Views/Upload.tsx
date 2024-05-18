@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import './Upload.css'; // Import the CSS file
 
 export default function UploadPage() {
 
@@ -17,9 +18,22 @@ export default function UploadPage() {
         }
 
     }, [uploadedFiles])
-    return(
-        <form encType="multipart/form-data">
-            <input type="file" accept=".pdf" name='resume' onChange={(event) => setUploadedFiles(event.target.files![0])} />
-        </form>
-    )
+    return (
+        <div>
+            <h1>Welcome to <span className="blue-color">ResumeNetwork</span>!</h1>
+            <h3></h3>
+            <form className="upload-form" encType="multipart/form-data">
+                <label className="file-upload-label">
+                    <input 
+                        type="file" 
+                        accept=".pdf" 
+                        name='resume' 
+                        className="file-input" 
+                        onChange={(event) => setUploadedFiles(event.target.files![0])} 
+                    />
+                    Upload Resume
+                </label>
+            </form>
+        </div>
+    );
 }

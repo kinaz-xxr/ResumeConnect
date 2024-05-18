@@ -1,0 +1,42 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.blue-color {
+    color:rgb(5, 124, 164);
+}
+
+a:hover span {
+  text-decoration: underline;
+  color: blue!important;
+}
+
+.upload-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+.file-upload-label {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 30px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.file-upload-label:hover {
+    background-color: #0056b3;
+}
+
+.file-input {
+    display: none;
+}
