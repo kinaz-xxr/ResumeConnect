@@ -7,12 +7,31 @@ html, body {
 }
 
 .blue-color {
-    color:rgb(5, 124, 164);
+    color:rgb(7, 110, 144);
 }
 
-a:hover span {
-  text-decoration: underline;
-  color: blue!important;
+.center-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.center-items {
+    justify-content: center;
+    align-items: center;
+    padding-left: 27%;  
+}
+
+.description {
+    font-weight: 400;
+    font-size: 21px;
+    padding-left: 10%;
+    padding-right: 10%;
+    margin-bottom: 10%;
+}
+
+.blue-color:hover {
+  background-color: rgb(253, 250, 67);
 }
 
 .upload-form {

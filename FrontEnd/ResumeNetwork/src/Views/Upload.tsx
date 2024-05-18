@@ -20,8 +20,10 @@ export default function UploadPage() {
     }, [uploadedFiles])
     return (
         <div>
-            <h1>Welcome to <span className="blue-color">ResumeNetwork</span>!</h1>
-            <h3></h3>
+            <h1 className="center-items">Welcome to <span className="blue-color"> ResumeNetwork</span>!</h1>
+            <h3 className="center-item description">Need to share your resume to others and received feedback? But too lazy to change it?
+                 We got you cover. We provide a resume sharing platform where you can share your resume, received feedback
+                 and most importantly, get AI-generated updates. Simply upload the pdf file below, share the link to others and let the magic does the rest :)</h3>
             <form className="upload-form" encType="multipart/form-data">
                 <label className="file-upload-label">
                     <input 
