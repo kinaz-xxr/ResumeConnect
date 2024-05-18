@@ -94,6 +94,41 @@ def getFile():
     except Exception as e:
         return abort(500, f"Something wrong happened in the server: {e}")
 
+# send the chosen comments to process
+@app.route("/com", method=["POST"])
+def postComments():
+    try:
+        if not request.is_json:
+            return abort(400, "Request body must be JSON")
+
+        data = request.json
+        s3URL, commentUUIDs = data["s3URL"], data["commentUUIDs"]
+        parts = s3URL.split("/")
+
+        if not parts:
+            return abort(400, "Invalid S3 URL format.")
+        
+        bucketName = parts[2].split(".")[0]
+        objectKey = "/".join(parts[3:])
+
+        try:
+            # get the file from s3
+            s3Object = s3.get_object(Bucket=bucketName, Key=objectKey)
+            fileData = s3Object["Body"].read()
+            fileStream = BytesIO(fileData)
+            fileStream.seek(0)
+            
+            # query the list of comments associate with the UUIDs from the database
+
+        except s3.exceptions.NoSuchKey:
+            return abort(404, "File not found in the S3 Bucket")
+        except (NoCredentialsError, PartialCredentialsError):
+            return abort(403, "AWS credentials not found or incomplete")
+        
+        
+
+    except Exception as e:
+        return abort(500, f"Something wrong happened in the server: {e}")
 
 if __name__ == "__main__":
     app.run(debug=True)
