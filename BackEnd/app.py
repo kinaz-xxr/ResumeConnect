@@ -67,10 +67,8 @@ def getS3URL():
     uuid = request.args.get("uuid") 
     # get s3 link by uuid
     s3URL = api.get_resume_from_uuid(uuid=uuid)["data"]["url"]
-
     if not s3URL:
         return abort(400, "Missing s3 URL in the query parameter")
-    print(f"URL: {s3URL}")
     # Check if the URL contains query parameters
     if '?' in s3URL:
         # Split the URL by '?'
@@ -104,12 +102,10 @@ def getS3URL():
 
         with open('temp.tex', 'w') as f:
             f.write(fileData)
-
         # Run pdflatex to convert .tex to .pdf
-        subprocess.run(['pdflatex', '-interaction=nonstopmode', 'temp.tex'])
-
+        subprocess.run(['pdflatex', '-interaction=nonstopmode', 'temp.tex'], capture_output=True)
         # Clean up temporary files
-        subprocess.run(['rm', 'temp.tex', 'temp.log', 'temp.aux'])
+        subprocess.run(['rm', 'temp.tex', 'temp.log'])
 
         response = send_file(
             "temp.pdf",
