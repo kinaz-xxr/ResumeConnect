@@ -1,31 +1,45 @@
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import './Comment.css'; 
 import { useLocation } from "react-router-dom";
-import { ScrollMode, Viewer } from '@react-pdf-viewer/core';
-import { CommentSection } from 'replyke';
+import { Viewer } from '@react-pdf-viewer/core';
 
+interface Comment {
+    text: string;
+    checked: boolean;
+}
 
 export default function UploadPage() {
-
-    const [submitting, setSubmitting] = useState(false)
-    const [comments, setComments] = useState<string[]>([])
-    const [renderedComments, setRenderedComments] = useState<ReactElement[]>([])
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [renderedComments, setRenderedComments] = useState<ReactElement[]>([]);
     const [resumeUUID, setResumeUUID] = useState("");
     const [s3URL, setS3URL] = useState("");
 
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const formRef = useRef<HTMLFormElement>(null);
+
     useEffect(() => {
-        const searchParams = new URLSearchParams(window.location.search);
         const uuidParam = searchParams.get('uuid');
-        (uuidParam!!);
-        setResumeUUID(uuidParam!!);
-    }, []);
+        setResumeUUID(uuidParam || "");
+    }, [searchParams]);
 
     const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
         e.stopPropagation();
 
-        setComments([...comments, e.target[0].value])
+        const newComment = e.target[0].value;
+        setComments([...comments, { text: newComment, checked: false }]);
 
+        if (formRef.current) {
+            formRef.current.reset();
+        }
+    }
+
+    const handleCheckboxChange = (index: number) => {
+        const newComments = comments.map((comment, i) => (
+            i === index ? { ...comment, checked: !comment.checked } : comment
+        ));
+        setComments(newComments);
     }
 
     useEffect(() => {
@@ -33,7 +47,7 @@ export default function UploadPage() {
             const url = `http://127.0.0.1:5000/getS3URL?uuid=${resumeUUID}`;
             fetch(url)
                 .then(response => {
-                    if(!response.ok) {
+                    if (!response.ok) {
                         throw new Error("Network response was not ok");
                     }
                     return response.json();
@@ -46,30 +60,41 @@ export default function UploadPage() {
                     console.error(`Error fetching data: ${error}`);
                 });
         }
-
     }, [resumeUUID]);
 
     useEffect(() => {
-        setRenderedComments(comments.map((comment: string) => {
-            const key_id =  !(comment in comments)?  comment : comment + "(1)"
-            return <div key={key_id}>{comment}</div>
-        }))
-    }, [comments])
-
+        setRenderedComments(comments.map((comment, index) => {
+            const key_id = `${comment.text}-${index}`;
+            return (
+                <div className="item" key={key_id}>
+                    <input 
+                        type="checkbox" 
+                        checked={comment.checked} 
+                        onChange={() => handleCheckboxChange(index)} 
+                    />
+                    {comment.text}
+                </div>
+            );
+        }));
+    }, [comments]);
 
     return (
         <div className="upload-page">
             <div className="pdf-viewer">
-    {s3URL ? <Viewer fileUrl={s3URL}/> : null}
+                {s3URL ? <Viewer fileUrl={s3URL}/> : null}
+            </div>
+            <div>
+                
             </div>
             <div className="comment-section">
                 <h2>Comments</h2>
-                <ul>{...renderedComments}</ul>
+                <ul>{renderedComments}</ul>
                 <div className="comments">
-                <form onSubmit={(e) => onFormSubmit(e)} className="commentForm"> 
-                    <input type="text" id="name"></input>
-                </form>
+                    <form onSubmit={onFormSubmit} ref={formRef} className="commentForm"> 
+                        <input type="text" id="name" />
+                    </form>
                 </div>
+                <button className="button-color">Download</button>
             </div>
         </div>
     );
