@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 import './Upload.css'; // Import the CSS file
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 export default function UploadPage() {
     const [uploadedFiles, setUploadedFiles] = useState<File | null>(null);
     const [s3URL, setS3URL] = useState("");
     const [fileUploaded, setFileUploaded] = useState(false);
+
+    const [textToCopy, setTextToCopy] = useState(''); // The text you want to copy
+    const [copyStatus, setCopyStatus] = useState(false); // To indicate if the text was copied
+
+    const onCopyText = () => {
+        setCopyStatus(true);
+        setTimeout(() => setCopyStatus(false), 2000); // Reset status after 2 seconds
+    };
 
     useEffect(() => {
         if (uploadedFiles) {
@@ -31,7 +40,9 @@ export default function UploadPage() {
                 We got you covered. We provide a resume sharing platform where you can share your resume, receive feedback,
                 and most importantly, get AI-generated updates. Simply upload the PDF file below, share the link with others and let the magic do the rest :)
             </h3>
+
             <form className="upload-form" encType="multipart/form-data">
+                
                 <label className="file-upload-label">
                     <input 
                         type="file" 
@@ -47,7 +58,15 @@ export default function UploadPage() {
                 <div className="popup">
                     <div className="popup-inner">
                         <h2>File Uploaded Successfully!</h2>
-                        <p>Your file has been uploaded. You can access it <a href={s3URL} target="_blank" rel="noopener noreferrer">here</a>.</p>
+                        <div>
+                        <p>
+                            <CopyToClipboard text={s3URL} onCopy={onCopyText}>
+                                <button>Copy to Clipboard</button>
+                            </CopyToClipboard>
+                        </p>
+                    
+                        {copyStatus && <p>Text copied to clipboard!</p>}
+                        </div>
                         <button onClick={() => setFileUploaded(false)}>Close</button>
                     </div>
                 </div>
