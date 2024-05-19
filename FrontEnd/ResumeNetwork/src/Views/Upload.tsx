@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import './Upload.css'; // Import the CSS file
+import './Upload.css'; 
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+
 
 export default function UploadPage() {
     const [uploadedFiles, setUploadedFiles] = useState<File | null>(null);
     const [s3URL, setS3URL] = useState("");
     const [fileUploaded, setFileUploaded] = useState(false);
+    const [copyStatus, setCopyStatus] = useState(false); 
 
     useEffect(() => {
         if (uploadedFiles) {
@@ -22,6 +25,12 @@ export default function UploadPage() {
               });
         }
     }, [uploadedFiles]);
+
+
+    const onCopyText = () => {
+        setCopyStatus(true); // Set copy status to true when text is copied
+        setTimeout(() => setCopyStatus(false), 2000); // Reset copy status after 2 seconds
+    };
 
     return (
         <div>
@@ -47,7 +56,15 @@ export default function UploadPage() {
                 <div className="popup">
                     <div className="popup-inner">
                         <h2>File Uploaded Successfully!</h2>
-                        <p>Your file has been uploaded. You can access it <a href={s3URL} target="_blank" rel="noopener noreferrer">here</a>.</p>
+                        <div>
+                        <p>
+                            <CopyToClipboard text={`/comment?s3URL=${encodeURIComponent(s3URL)}`} onCopy={onCopyText}>
+                                <button>Copy to Clipboard</button>
+                            </CopyToClipboard>
+                        </p>
+                    
+                        {copyStatus && <p>Text copied to clipboard!</p>}
+                        </div>
                         <p>You can view and comment on your file <a href={`/comment?s3URL=${encodeURIComponent(s3URL)}`} target="_blank" rel="noopener noreferrer">here</a>.</p>
                         <button onClick={() => setFileUploaded(false)}>Close</button>
                     </div>
