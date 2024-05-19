@@ -104,10 +104,23 @@ def getFile():
     except Exception as e:
         return abort(500, f"Something wrong happened in the server: {e}")
 
+# create an endpoint for sending the comments
+@app.route("/comments", methods=["POST"])
+def postComments():
+    try:
+        if not request.is_json:
+            return abort(400, "Request body must be JSON")
+        
+        data = request.json
+        comment, resumeId = data["comment"], data["resumeId"]
+        
+        # put this into the database
+    except Exception as e:
+        return abort(500, f"Something wrong happened in the server!")
 
 # send the chosen comments to process
 @app.route("/process", methods=["POST"])
-def postComments():
+def process():
     try:
         if not request.is_json:
             return abort(400, "Request body must be JSON")
