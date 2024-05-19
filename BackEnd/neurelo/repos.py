@@ -38,25 +38,28 @@ class Api:
 
         response = requests.get(url, headers=headers, params=params)
 
-        print(response.status_code)
-        print(response.text)
+        content_of_comments = []
+        for comments in response.data:
+            content_of_comments.append(comments.content)
 
-    def add_comments(self, resume_uuid: str):
+        return content_of_comments
+
+
+    def add_comments(self, resume_uuid: str, content: str):
         url = "https://us-west-2.aws.neurelo.com/rest/comment/__one?"
         headers = {
             "X-API-KEY": os.environ.get("NEURELO_API_KEY"),
             "Content-Type": "application/json"
         }
+        comment_uuid = str(uuid.uuid4())
         data = {
-            "resume": {"connect": {"uuid": "b1769692-74a2-4d45-a064-6990e2c07c31"}},
-            "content": "does this work",
-            "uuid": "uuid1",
+            "resume": {"connect": {"uuid": resume_uuid}},
+            "content": content,
+            "uuid": comment_uuid,
             "timestamp": 123123123
         }
 
         response = requests.post(url, headers=headers, data=json.dumps(data))
 
-        print(response.status_code)
-        print(response.text)
 
         
