@@ -12,11 +12,7 @@ export default function UploadPage() {
     const [comments, setComments] = useState<Comment[]>([]);
     const [renderedComments, setRenderedComments] = useState<ReactElement[]>([]);
     const [resumeUUID, setResumeUUID] = useState("");
-    const [s3URL, setS3URL] = useState("");
-
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
-    const formRef = useRef<HTMLFormElement>(null);
+    const [pdfBlob, setPdfBlob] = useState<Blob>();
 
     useEffect(() => {
         const uuidParam = searchParams.get('uuid');
@@ -45,20 +41,22 @@ export default function UploadPage() {
     useEffect(() => {
         if (resumeUUID) {
             const url = `http://127.0.0.1:5000/getS3URL?uuid=${resumeUUID}`;
+            
             fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    setS3URL(data["s3URL"]);
-                })
-                .catch(error => {
-                    console.error(`Error fetching data: ${error}`);
-                });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                // Return the response as blob
+                return response.blob();
+            })
+            .then(blob => {
+                // Set the PDF blob state to render the PDF in the component
+                setPdfBlob(blob);
+            })
+            .catch(error => {
+                console.error(`Error fetching PDF data: ${error}`);
+            });
         }
     }, [resumeUUID]);
 
@@ -81,10 +79,14 @@ export default function UploadPage() {
     return (
         <div className="upload-page">
             <div className="pdf-viewer">
-                {s3URL ? <Viewer fileUrl={s3URL}/> : null}
-            </div>
-            <div>
-                
+            {pdfBlob && (
+                <iframe
+                    src={URL.createObjectURL(pdfBlob)}
+                    width="100%"
+                    height="500px"
+                    title="PDF Document"
+                />
+            )}
             </div>
             <div className="comment-section">
                 <h2>Comments</h2>
