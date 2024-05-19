@@ -7,6 +7,7 @@ import {CopyToClipboard} from 'react-copy-to-clipboard';
 export default function UploadPage() {
     const [uploadedFiles, setUploadedFiles] = useState<File | null>(null);
     const [s3URL, setS3URL] = useState("");
+    const [uuid, setUuid] = useState("")
     const [fileUploaded, setFileUploaded] = useState(false);
     const [copyStatus, setCopyStatus] = useState(false); 
 
@@ -20,8 +21,10 @@ export default function UploadPage() {
               })
               .then((response) => response.json())
               .then((data) => {
+                console.log(data["uuid"])
                 setS3URL(data["s3URL"]);
                 setFileUploaded(true); // Set fileUploaded to true when URL is received
+                setUuid(data["uuid"])
               });
         }
     }, [uploadedFiles]);
@@ -65,7 +68,7 @@ export default function UploadPage() {
                     
                         {copyStatus && <p>Text copied to clipboard!</p>}
                         </div>
-                        <p>You can view and comment on your file <a href={`/comment?s3URL=${encodeURIComponent(s3URL)}`} target="_blank" rel="noopener noreferrer">here</a>.</p>
+                        <p>You can view and comment on your file <a href={`/comment?s3URL=${encodeURIComponent(s3URL)}?uuid=${uuid}`} target="_blank" rel="noopener noreferrer">here</a>.</p>
                         <button onClick={() => setFileUploaded(false)}>Close</button>
                     </div>
                 </div>
