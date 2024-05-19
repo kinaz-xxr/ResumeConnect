@@ -35,7 +35,7 @@ export default function UploadPage() {
 
     return (
         <div>
-            <h1 className="center-items">Welcome to <span className="blue-color"> Re-Network</span>!</h1>
+            <h1 className="center-items">Welcome to <span className="blue-color"> Resume Connect</span>!</h1>
             <h3 className="center-item description">
                 Need to share your resume to others and receive feedback? But too lazy to change it?
                 We got you covered. We provide a resume sharing platform where you can share your resume, receive feedback,
