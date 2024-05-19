@@ -63,17 +63,34 @@ def upload():
 # get the pdf file from the s3 bucket
 @app.route("/getS3URL", methods=["GET"])
 def getS3URL():
-    uuid = request.args.get("uuid")
+    uuid = request.args.get("uuid") 
     # get s3 link by uuid
     s3URL = api.get_resume_from_uuid(uuid=uuid)["data"]["url"]
 
     if not s3URL:
         return abort(400, "Missing s3 URL in the query parameter")
 
+    parts = s3URL.split("/")
+
+    if not parts:
+        return abort(400, "Invalid S3 URL format.")
+
+    bucketName = parts[2].split(".")[0]
+    objectKey = "/".join(parts[3:])
+
     try:
-        return jsonify({
-            "s3URL" : s3URL
-        }), 200
+        # get the file from s3
+        s3Object = s3.get_object(Bucket=bucketName, Key=objectKey)
+        fileData = s3Object["Body"].read()
+        fileStream = BytesIO(fileData)
+        fileStream.seek(0)
+
+        return send_file(
+            latex_to_pdf,
+            as_attachment=True,
+            download_name=objectKey.split("/")[-1],
+            mimetype="application/pdf"
+        )
 
     except s3.exceptions.NoSuchKey:
         return abort(404, "File not found in the S3 Bucket")
