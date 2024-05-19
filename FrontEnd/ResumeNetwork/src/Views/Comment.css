@@ -11,6 +11,15 @@
     padding: 10px;
 }
 
+.disabled{
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.65;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
 .comment-section {
     font-size: medium;
     display: flex;
@@ -46,6 +55,15 @@
     padding: 10px 10px;
     margin-right: 30px;
     margin-top: 10px;
+}
+
+.item_disabled {
+    border: 3px solid rgb(0, 0, 0);
+    border-radius: 5px;
+    padding: 10px 10px;
+    margin-right: 30px;
+    margin-top: 10px;
+    opacity: 0.4;
 }
 
 .button-color {
