@@ -71,8 +71,7 @@ export default function UploadPage() {
         .then( blob => {
           var file = window.URL.createObjectURL(blob);
           setIsLoading(false); 
-          window.location.assign(file);
-          
+          window.open(file, '_blank');
         })
     }
 
@@ -102,9 +101,10 @@ export default function UploadPage() {
         setRenderedComments(comments.map((comment, index) => {
             const key_id = `${comment.content}-${index}`;
             return (
-                <div className="item" key={key_id}>
+                <div className={isLoading ? "item_disabled" :"item"} key={key_id}>
                     <input 
                         type="checkbox" 
+                        className={isLoading ? "disabled" : ""}
                         checked={comment.checked} 
                         onChange={() => handleCheckboxChange(index)} 
                     />
@@ -112,7 +112,7 @@ export default function UploadPage() {
                 </div>
             );
         }));
-    }, [comments]);
+    }, [comments, isLoading]);
 
     return (
         <div className="upload-page">
@@ -128,6 +128,7 @@ export default function UploadPage() {
             </div>
             <div className="comment-section">
                 <h2>Comments</h2>
+                {isLoading ? <Loading /> : null}
                 <ul>{renderedComments}</ul>
                 <div>
                     <div className="comments">
@@ -135,10 +136,10 @@ export default function UploadPage() {
                             <input type="text" id="name" />
                         </form>
                     </div>
-                    <button className="button-color" onClick={getRecommendations}>Download</button>
+                    <button className={isLoading ? "disabled" : "button-color"} onClick={getRecommendations}>Download</button>
                 </div>
             </div>
-            {isLoading ? <Loading /> : null}
+
         </div>
     );
 }
