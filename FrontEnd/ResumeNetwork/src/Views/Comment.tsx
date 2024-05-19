@@ -11,7 +11,7 @@ export default function UploadPage() {
     const [comments, setComments] = useState<string[]>([])
     const [renderedComments, setRenderedComments] = useState<ReactElement[]>([])
     const [resumeUUID, setResumeUUID] = useState("");
-    const [s3URL, setS3URL] = useState("");
+    const [pdfBlob, setPdfBlob] = useState<Blob>();
 
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
@@ -31,20 +31,22 @@ export default function UploadPage() {
     useEffect(() => {
         if (resumeUUID) {
             const url = `http://127.0.0.1:5000/getS3URL?uuid=${resumeUUID}`;
+            
             fetch(url)
-                .then(response => {
-                    if(!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    setS3URL(data["s3URL"]);
-                })
-                .catch(error => {
-                    console.error(`Error fetching data: ${error}`);
-                });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                // Return the response as blob
+                return response.blob();
+            })
+            .then(blob => {
+                // Set the PDF blob state to render the PDF in the component
+                setPdfBlob(blob);
+            })
+            .catch(error => {
+                console.error(`Error fetching PDF data: ${error}`);
+            });
         }
 
     }, [resumeUUID]);
@@ -60,7 +62,14 @@ export default function UploadPage() {
     return (
         <div className="upload-page">
             <div className="pdf-viewer">
-    {s3URL ? <Viewer fileUrl={s3URL}/> : null}
+            {pdfBlob && (
+                <iframe
+                    src={URL.createObjectURL(pdfBlob)}
+                    width="100%"
+                    height="500px"
+                    title="PDF Document"
+                />
+            )}
             </div>
             <div className="comment-section">
                 <h2>Comments</h2>
