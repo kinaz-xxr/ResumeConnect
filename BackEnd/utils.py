@@ -5,15 +5,16 @@ import subprocess
 COHERE_API_KEY = os.environ.get("COHERE_API_KEY")
 
 def get_latex(prompts, file):
-    latex_as_string = file.read().decode('utf-8')
+    latex_as_string = file
+    result = latex_as_string
     co = cohere.Client(api_key=COHERE_API_KEY)
-
-    full_prompt = "Output should be raw LaTex, 1 ready to be compiled and removed all comments. Don't include any comment. "+ prompts[0] + latex_as_string + " Output: ..."
-    response = co.chat(
-        model="command-r-plus",
-        message=full_prompt
-    )
-    result = response.text
+    for prompt in prompts:
+      full_prompt = "Output should be raw LaTex, 1 ready to be compiled and removed all comments. Don't include any comment.\n"+ prompt + result + " Output: ..."
+      response = co.chat(
+          model="command-r-plus",
+          message=full_prompt
+      )
+      result = response.text
 
     return result
 
