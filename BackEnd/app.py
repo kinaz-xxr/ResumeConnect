@@ -47,7 +47,7 @@ def upload():
             s3.upload_fileobj(file, "resumenetworkmainresumebucket", filename)
             presigned_url = create_presigned_url(filename)  
 
-            api.upload_resume(uuid = str(file_uuid), url = presigned_url)
+            api.upload_resume(uuid = str(file_uuid), s3_url = presigned_url)
             return (
                 jsonify(
                     {
@@ -65,6 +65,8 @@ def upload():
 def getS3URL():
     uuid = request.args.get("uuid")
     # get s3 link by uuid
+    print(uuid)
+    print(api.get_resume_from_uuid(uuid=uuid))
     s3URL = api.get_resume_from_uuid(uuid=uuid)["data"]["url"]
 
     if not s3URL:

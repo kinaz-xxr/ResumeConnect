@@ -29,21 +29,24 @@ export default function UploadPage() {
     }
 
     useEffect(() => {
-        const url = `http://127.0.0.1:5000/getS3URL?uuid=${resumeUUID}`;
-        fetch(url)
-            .then(response => {
-                if(response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-                setS3URL(data["s3URL"]);
-            })
-            .catch(error => {
-                console.error(`Error fetching data: ${error}`);
-            });
+        if (resumeUUID) {
+            const url = `http://127.0.0.1:5000/getS3URL?uuid=${resumeUUID}`;
+            fetch(url)
+                .then(response => {
+                    if(!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    setS3URL(data["s3URL"]);
+                })
+                .catch(error => {
+                    console.error(`Error fetching data: ${error}`);
+                });
+        }
+
     }, [resumeUUID]);
 
     useEffect(() => {
@@ -57,7 +60,7 @@ export default function UploadPage() {
     return (
         <div className="upload-page">
             <div className="pdf-viewer">
-    <Viewer fileUrl={s3URL!}/>
+    {s3URL ? <Viewer fileUrl={s3URL}/> : null}
             </div>
             <div className="comment-section">
                 <h2>Comments</h2>
