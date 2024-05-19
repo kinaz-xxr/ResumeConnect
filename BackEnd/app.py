@@ -154,51 +154,64 @@ def getComments():
 # send the chosen comments to process
 @app.route("/process", methods=["POST"])
 def process():
-    try:
-        if not request.is_json:
-            return abort(400, "Request body must be JSON")
+    if not request.is_json:
+        return abort(400, "Request body must be JSON")
 
-        data = request.json
-        s3URL, comments= data["s3URL"], data["comment"]
-        parts = s3URL.split("/")
+    data = request.json
+    resume_uuid, comments= data["resume_uuid"], data["comments"]
 
-        if not parts:
-            return abort(400, "Invalid S3 URL format.")
+    print("here?")
+    s3URL = api.get_resume_from_uuid(resume_uuid)["data"]["url"]
+    print("wtf")
+    parts = s3URL.split("/")
 
-        bucketName = parts[2].split(".")[0]
-        objectKey = "/".join(parts[3:])
+    if not parts:
+        return abort(400, "Invalid S3 URL format.")
 
-        try:
-            # get the file from s3
-            s3Object = s3.get_object(Bucket=bucketName, Key=objectKey)
-            fileData = s3Object["Body"].read()
-            fileStream = BytesIO(fileData)
-            fileStream.seek(0)
+    if '?' in s3URL:
+        # Split the URL by '?'
+        url_parts = s3URL.split('?')
 
-        
-            latexResult = get_latex(comments, fileStream)
-            
-            # convert this latex string to pdf file
-            outputFile = "output.pdf"
-            latex_to_pdf(latexResult, outputFile)
-            response = send_file(
-                outputFile,
-                as_attachment=True,
-                mimetype="application/pdf"
-            )
+        # Extract the base URL containing the bucket name and object key
+        base_url = url_parts[0]
 
-            # delete the temp pdf file after sending the response
-            os.remove(outputFile)
+        # Extract the query parameters
+        query_params = url_parts[1]
 
-            return response
+        # Split the base URL by '/'
+        base_url_parts = base_url.split('/')
 
-        except s3.exceptions.NoSuchKey:
-            return abort(404, "File not found in the S3 Bucket")
-        except (NoCredentialsError, PartialCredentialsError):
-            return abort(403, "AWS credentials not found or incomplete")
+        # Extract bucket name and object key
+        bucketName = base_url_parts[2].split('.')[0]
+        objectKey = '/'.join(base_url_parts[3:])  # Exclude the empty string at the beginning
 
-    except Exception as e:
-        return abort(500, f"Something wrong happened in the server: {e}")
+    else:
+        # Split the URL by '/'
+        parts = s3URL.split('/')
+
+        # Extract bucket name and object key
+        bucketName = parts[2].split('.')[0]
+        objectKey = '/'.join(parts[3:])
+    # get the file from s3
+    s3Object = s3.get_object(Bucket=bucketName, Key=objectKey)
+    fileData = s3Object["Body"].read().decode("utf-8")
+    print(fileData)
+    latexResult = get_latex(comments, fileData)
+    
+    # convert this latex string to pdf file
+    outputFile = "output.pdf"
+    print(latexResult)
+    latex_to_pdf(latexResult, outputFile)
+    response = send_file(
+        outputFile,
+        as_attachment=True,
+        mimetype="application/pdf"
+    )
+
+    # delete the temp pdf file after sending the response
+    os.remove(outputFile)
+
+    return response
 
 
 if __name__ == "__main__":

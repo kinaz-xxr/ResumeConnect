@@ -7,7 +7,7 @@ COHERE_API_KEY = os.environ.get("COHERE_API_KEY")
 def get_latex(prompts, file):
     latex_as_string = file
     result = latex_as_string
-    co = cohere.Client(api_key=COHERE_API_KEY)
+    co = cohere.Client(COHERE_API_KEY)
     for prompt in prompts:
       full_prompt = "Output should be raw LaTex, 1 ready to be compiled and removed all comments. Don't include any comment.\n"+ prompt + result + " Output: ..."
       response = co.chat(
@@ -26,11 +26,11 @@ def allowed_file(filename):
 def latex_to_pdf(latex_string, output_file):
     try:
         print(f"Latex string: {latex_string}")
-        with open("tmep.tex", "w") as f:
+        with open("temp.tex", "w") as f:
             f.write(latex_string)
 
         # Run pdflatex to convert .tex to .pdf
-        subprocess.run(["pdflatex", "-interaction=nonstopmode", "temp.tex"])
+        subprocess.run(["pdflatex", "-interaction=nonstopmode", "temp.tex"], capture_output=True)
 
         # Move the generated PDF to the desired output file path
         subprocess.run(["mv", "temp.pdf", output_file])

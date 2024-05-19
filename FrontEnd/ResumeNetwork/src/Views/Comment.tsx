@@ -55,6 +55,22 @@ export default function UploadPage() {
         setComments(newComments);
     }
 
+    const getRecommendations = () => {
+        const checkedComments = comments.filter((comment) =>comment.checked === true)
+        fetch("http://127.0.0.1:5000/process", {
+            method: "POST", 
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify({"comments": checkedComments.map(comments => comments.content), "resume_uuid": resumeUUID})
+        }).then( res => res.blob() )
+        .then( blob => {
+          var file = window.URL.createObjectURL(blob);
+          window.location.assign(file);
+        })
+    }
+
     useEffect(() => {
         if (resumeUUID) {
             const url = `http://127.0.0.1:5000/getS3URL?uuid=${resumeUUID}`;
@@ -114,7 +130,7 @@ export default function UploadPage() {
                             <input type="text" id="name" />
                         </form>
                     </div>
-                    <button className="button-color">Download</button>
+                    <button className="button-color" onClick={getRecommendations}>Download</button>
                 </div>
             </div>
         </div>

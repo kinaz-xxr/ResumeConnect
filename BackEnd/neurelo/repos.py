@@ -79,8 +79,6 @@ class Api:
         }
 
         response = requests.get(url, headers=headers, params=params)
-        print(response.status_code)
-        print(response.json())
         return response.json()
     
     def get_resume_from_uuid(self, uuid: str):
