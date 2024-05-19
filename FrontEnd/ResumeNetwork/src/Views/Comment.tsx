@@ -13,11 +13,13 @@ export default function UploadPage() {
     const [renderedComments, setRenderedComments] = useState<ReactElement[]>([]);
     const [resumeUUID, setResumeUUID] = useState("");
     const [pdfBlob, setPdfBlob] = useState<Blob>();
+    const formRef = useRef<HTMLFormElement>(null);
 
     useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
         const uuidParam = searchParams.get('uuid');
         setResumeUUID(uuidParam || "");
-    }, [searchParams]);
+    }, []);
 
     const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -91,12 +93,14 @@ export default function UploadPage() {
             <div className="comment-section">
                 <h2>Comments</h2>
                 <ul>{renderedComments}</ul>
-                <div className="comments">
-                    <form onSubmit={onFormSubmit} ref={formRef} className="commentForm"> 
-                        <input type="text" id="name" />
-                    </form>
+                <div>
+                    <div className="comments">
+                        <form onSubmit={onFormSubmit} ref={formRef} className="commentForm"> 
+                            <input type="text" id="name" />
+                        </form>
+                    </div>
+                    <button className="button-color">Download</button>
                 </div>
-                <button className="button-color">Download</button>
             </div>
         </div>
     );
