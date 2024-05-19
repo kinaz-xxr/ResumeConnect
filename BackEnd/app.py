@@ -8,6 +8,8 @@ import os
 from dotenv import load_dotenv
 from io import BytesIO
 import re
+import asyncio
+import websockets
 
 app = Flask(__name__)
 CORS(app)
@@ -51,9 +53,14 @@ def upload():
             filename = str(file_uuid) + "_" + file.filename
             s3.upload_fileobj(file, "resumenetworkmainresumebucket", filename)
             presigned_url = create_presigned_url(filename)
-            return jsonify({
-                "s3URL" : presigned_url,
-            }), 200
+            return (
+                jsonify(
+                    {
+                        "s3URL": presigned_url,
+                    }
+                ),
+                200,
+            )
         else:
             return abort(400, "File type not allowed!")
 
@@ -94,8 +101,9 @@ def getFile():
     except Exception as e:
         return abort(500, f"Something wrong happened in the server: {e}")
 
+
 # send the chosen comments to process
-@app.route("/com", method=["POST"])
+@app.route("/process", method=["POST"])
 def postComments():
     try:
         if not request.is_json:
@@ -107,7 +115,7 @@ def postComments():
 
         if not parts:
             return abort(400, "Invalid S3 URL format.")
-        
+
         bucketName = parts[2].split(".")[0]
         objectKey = "/".join(parts[3:])
 
@@ -117,18 +125,17 @@ def postComments():
             fileData = s3Object["Body"].read()
             fileStream = BytesIO(fileData)
             fileStream.seek(0)
-            
+
             # query the list of comments associate with the UUIDs from the database
 
         except s3.exceptions.NoSuchKey:
             return abort(404, "File not found in the S3 Bucket")
         except (NoCredentialsError, PartialCredentialsError):
             return abort(403, "AWS credentials not found or incomplete")
-        
-        
 
     except Exception as e:
         return abort(500, f"Something wrong happened in the server: {e}")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
