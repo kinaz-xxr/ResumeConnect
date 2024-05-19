@@ -25,12 +25,8 @@
                 "resume": {
                     "$ref": "#/objects/resume",
                     "relation": {
-                        "attrKey": [
-                            "resume_uuid"
-                        ], 
-                        "foreignAttrKey": [
-                            "uuid"
-                        ]
+                        "attrKey":"resume_uuid", 
+                        "foreignAttrKey": "uuid"
                     }
                 }
                 , 
@@ -44,6 +40,9 @@
                 },
                 "content": {
                     "type": "string"
+                }, 
+                "timestamp": {
+                    "type": "integer"
                 }
             }
         }

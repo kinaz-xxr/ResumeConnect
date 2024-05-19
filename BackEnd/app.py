@@ -130,6 +130,7 @@ def postComments():
             fileStream.seek(0)
 
             # query the list of comments associate with the UUIDs from the database
+            return api.get_comment_by_uuid(commentUUIDs)
 
         except s3.exceptions.NoSuchKey:
             return abort(404, "File not found in the S3 Bucket")
