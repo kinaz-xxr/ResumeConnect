@@ -58,7 +58,6 @@ def upload():
             presigned_url = create_presigned_url(filename)
 
             api.upload_resume(uuid = str(file_uuid), url = presigned_url)
-            return "File successfully uploaded", 200
             return (
                 jsonify(
                     {
