@@ -29,7 +29,7 @@ export default function UploadPage() {
     }
 
     useEffect(() => {
-        const url = `http://127.0.0.1:5000/getFile?uuid=${resumeUUID}`;
+        const url = `http://127.0.0.1:5000/getS3URL?uuid=${resumeUUID}`;
         fetch(url)
             .then(response => {
                 if(response.ok) {
