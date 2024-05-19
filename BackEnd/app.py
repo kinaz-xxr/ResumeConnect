@@ -76,6 +76,7 @@ def upload():
                 jsonify(
                     {
                         "s3URL": presigned_url,
+                        "uuid": file_uuid
                     }
                 ),
                 200,
@@ -121,7 +122,7 @@ def getFile():
         return abort(500, f"Something wrong happened in the server: {e}")
 
 # create an endpoint for sending the comments
-@app.route("/comments", methods=["POST"])
+@app.route("/add_comments", methods=["POST"])
 def postComments():
     try:
         if not request.is_json:
@@ -133,6 +134,11 @@ def postComments():
         # put this into the database
     except Exception as e:
         return abort(500, f"Something wrong happened in the server!")
+
+@app.route("/get_comments/<resume_uuid>", methods=["GET"])
+def getComments(resume_uuid: str):
+    return api.get_comment_by_uuid(resume_uuid)
+        
 
 # send the chosen comments to process
 @app.route("/process", methods=["POST"])
