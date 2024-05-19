@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
 import './Comment.css'; 
+import { useLocation } from "react-router-dom";
+import { ScrollMode, Viewer } from '@react-pdf-viewer/core';
 
 export default function UploadPage() {
+
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const s3URL = searchParams.get('s3URL');
+
+
     return (
         <div className="upload-page">
             <div className="pdf-viewer">
-                <embed src="path/to/your/pdf.pdf" type="application/pdf" width="100%" height="100%"/>
+    <Viewer fileUrl={s3URL!}/>
             </div>
             <div className="comment-section">
                 <h2>Comments</h2>
