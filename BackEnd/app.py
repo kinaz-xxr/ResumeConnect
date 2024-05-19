@@ -9,8 +9,6 @@ from dotenv import load_dotenv
 from io import BytesIO
 import re
 from BackEnd.neurelo.repos import Api
-import asyncio
-import websockets
 
 app = Flask(__name__)
 
@@ -108,7 +106,7 @@ def getFile():
 
 
 # send the chosen comments to process
-@app.route("/process", method=["POST"])
+@app.route("/process", methods=["POST"])
 def postComments():
     try:
         if not request.is_json:
