@@ -1,26 +1,27 @@
 .upload-page {
     display: flex;
-    height: 100vh; /* Full height */
-    width: 100vw; /* Full width */
+    height: 100vh; 
+    width: 100vw;
 }
 
 .pdf-viewer {
-    flex: 2; /* Takes 2/3 of the width */
-    background-color: #f0f0f0; /* Light gray background */
-    overflow: auto; /* Enables scrolling if content overflows */
+    flex: 2; 
+    background-color: #f0f0f0; 
+    overflow: auto;
     padding: 10px;
 }
 
 .comment-section {
+    font-size: medium;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     color: black;
-    flex: 1; /* Takes 1/3 of the width */
-    background-color: #ffffff; /* White background */
-    overflow: auto; /* Enables scrolling if content overflows */
+    flex: 1; 
+    background-color: #ffffff; 
+    overflow: auto; 
     padding: 10px;
-    border-left: 1px solid #ccc; /* Optional border for visual separation */
+    border-left: 1px solid #ccc; 
 }
 
 .comment-section h2 {
@@ -29,4 +30,32 @@
 
 .comments {
     margin-top: 10px;
+}
+
+.commentForm input {
+    width: 100%;
+    height: 50px; 
+    font-size: 16px; 
+    padding: 10px; 
+    box-sizing: border-box;
+}
+
+.item {
+    border: 3px solid rgb(0, 0, 0);
+    border-radius: 5px;
+    padding: 10px 10px;
+    margin-right: 30px;
+    margin-top: 10px;
+}
+
+.button-color {
+  background-color: #04AA6D; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  margin-top: 10px;
 }
