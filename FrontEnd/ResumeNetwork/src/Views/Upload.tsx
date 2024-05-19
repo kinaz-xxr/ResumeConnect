@@ -21,8 +21,6 @@ export default function UploadPage() {
               })
               .then((response) => response.json())
               .then((data) => {
-                console.log(data["uuid"])
-                setS3URL(data["s3URL"]);
                 setFileUploaded(true); // Set fileUploaded to true when URL is received
                 setUuid(data["uuid"])
               });
@@ -68,7 +66,7 @@ export default function UploadPage() {
                     
                         {copyStatus && <p>Text copied to clipboard!</p>}
                         </div>
-                        <p>You can view and comment on your file <a href={`/comment?s3URL=${encodeURIComponent(s3URL)}?uuid=${uuid}`} target="_blank" rel="noopener noreferrer">here</a>.</p>
+                        <p>You can view and comment on your file <a href={`/comment?uuid=${uuid}`} target="_blank" rel="noopener noreferrer">here</a>.</p>
                         <button onClick={() => setFileUploaded(false)}>Close</button>
                     </div>
                 </div>

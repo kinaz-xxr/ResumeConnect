@@ -10,11 +10,15 @@ export default function UploadPage() {
     const [submitting, setSubmitting] = useState(false)
     const [comments, setComments] = useState<string[]>([])
     const [renderedComments, setRenderedComments] = useState<ReactElement[]>([])
+    const [resumeUUID, setResumeUUID] = useState("");
+    const [s3URL, setS3URL] = useState("");
 
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
-    const [resumeUuid, setResumeUuid] = useState(searchParams.get('uuid'))
-    const s3URL = searchParams.get('s3URL');
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const uuidParam = searchParams.get('uuid');
+        (uuidParam!!);
+        setResumeUUID(uuidParam!!);
+    }, []);
 
     const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -24,14 +28,23 @@ export default function UploadPage() {
 
     }
 
-    const getComments = async() => {
-        console.log(resumeUuid)
-    }
-
     useEffect(() => {
-        console.log(s3URL)
-        getComments()
-    }, [resumeUuid])
+        const url = `http://127.0.0.1:5000/getFile?uuid=${resumeUUID}`;
+        fetch(url)
+            .then(response => {
+                if(response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                setS3URL(data["s3URL"]);
+            })
+            .catch(error => {
+                console.error(`Error fetching data: ${error}`);
+            });
+    }, [resumeUUID]);
 
     useEffect(() => {
         setRenderedComments(comments.map((comment: string) => {
