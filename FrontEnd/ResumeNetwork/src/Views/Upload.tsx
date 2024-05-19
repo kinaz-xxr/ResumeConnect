@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import './Upload.css'; // Import the CSS file
 
 export default function UploadPage() {
@@ -9,7 +10,7 @@ export default function UploadPage() {
     useEffect(() => {
         if (uploadedFiles) {
             let formData = new FormData(); 
-            formData.append('file', uploadedFiles)
+            formData.append('file', uploadedFiles);
             fetch('http://127.0.0.1:5000/upload',  {
                 method: "POST", 
                 body: formData, // body data type must match "Content-Type" header
@@ -18,9 +19,8 @@ export default function UploadPage() {
               .then((data) => {
                 setS3URL(data["s3URL"]);
                 setFileUploaded(true); // Set fileUploaded to true when URL is received
-              })
+              });
         }
-
     }, [uploadedFiles]);
 
     return (
@@ -48,6 +48,7 @@ export default function UploadPage() {
                     <div className="popup-inner">
                         <h2>File Uploaded Successfully!</h2>
                         <p>Your file has been uploaded. You can access it <a href={s3URL} target="_blank" rel="noopener noreferrer">here</a>.</p>
+                        <p>You can view and comment on your file <a href={`/comment?s3URL=${encodeURIComponent(s3URL)}`} target="_blank" rel="noopener noreferrer">here</a>.</p>
                         <button onClick={() => setFileUploaded(false)}>Close</button>
                     </div>
                 </div>
