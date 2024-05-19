@@ -16,7 +16,6 @@ export default function UploadPage() {
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
         const uuidParam = searchParams.get('uuid');
-        (uuidParam!!);
         setResumeUUID(uuidParam!!);
     }, []);
 
