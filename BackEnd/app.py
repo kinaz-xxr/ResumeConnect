@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from io import BytesIO
 import re
 from BackEnd.neurelo.repos import Api
+import asyncio
+import websockets
 
 app = Flask(__name__)
 
@@ -57,6 +59,14 @@ def upload():
 
             api.upload_resume(uuid = str(file_uuid), url = presigned_url)
             return "File successfully uploaded", 200
+            return (
+                jsonify(
+                    {
+                        "s3URL": presigned_url,
+                    }
+                ),
+                200,
+            )
         else:
             return "File type not allowed", 400
 
@@ -94,6 +104,41 @@ def getFile():
         return abort(404, "File not found in the S3 Bucket")
     except (NoCredentialsError, PartialCredentialsError):
         return abort(403, "AWS credentials not found or incomplete")
+    except Exception as e:
+        return abort(500, f"Something wrong happened in the server: {e}")
+
+
+# send the chosen comments to process
+@app.route("/process", method=["POST"])
+def postComments():
+    try:
+        if not request.is_json:
+            return abort(400, "Request body must be JSON")
+
+        data = request.json
+        s3URL, commentUUIDs = data["s3URL"], data["commentUUIDs"]
+        parts = s3URL.split("/")
+
+        if not parts:
+            return abort(400, "Invalid S3 URL format.")
+
+        bucketName = parts[2].split(".")[0]
+        objectKey = "/".join(parts[3:])
+
+        try:
+            # get the file from s3
+            s3Object = s3.get_object(Bucket=bucketName, Key=objectKey)
+            fileData = s3Object["Body"].read()
+            fileStream = BytesIO(fileData)
+            fileStream.seek(0)
+
+            # query the list of comments associate with the UUIDs from the database
+
+        except s3.exceptions.NoSuchKey:
+            return abort(404, "File not found in the S3 Bucket")
+        except (NoCredentialsError, PartialCredentialsError):
+            return abort(403, "AWS credentials not found or incomplete")
+
     except Exception as e:
         return abort(500, f"Something wrong happened in the server: {e}")
 
