@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { Viewer } from '@react-pdf-viewer/core';
 
 interface Comment {
-    text: string;
+    content: string;
     checked: boolean;
 }
 
@@ -19,6 +19,12 @@ export default function UploadPage() {
         const searchParams = new URLSearchParams(window.location.search);
         const uuidParam = searchParams.get('uuid');
         setResumeUUID(uuidParam!!);
+        fetch("http://127.0.0.1:5000/get_comments?uuid=" + uuidParam)
+        .then(response => response.json())
+        .then(prevComments => {
+            setComments([...prevComments["data"], ...comments])
+            return true
+            })
     }, []);
 
     const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,11 +32,20 @@ export default function UploadPage() {
         e.stopPropagation();
 
         const newComment = e.target[0].value;
-        setComments([...comments, { text: newComment, checked: false }]);
+        setComments([...comments, { content: newComment, checked: false }]);
 
         if (formRef.current) {
             formRef.current.reset();
         }
+
+        fetch("http://127.0.0.1:5000/add_comments", {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+            method: "POST", 
+            body: JSON.stringify({"comment": newComment, "resumeId": resumeUUID})
+        })
     }
 
     const handleCheckboxChange = (index: number) => {
@@ -60,11 +75,11 @@ export default function UploadPage() {
                 console.error(`Error fetching PDF data: ${error}`);
             });
         }
-    }, [resumeUUID]);
+    }, [resumeUUID]);   
 
     useEffect(() => {
         setRenderedComments(comments.map((comment, index) => {
-            const key_id = `${comment.text}-${index}`;
+            const key_id = `${comment.content}-${index}`;
             return (
                 <div className="item" key={key_id}>
                     <input 
@@ -72,7 +87,7 @@ export default function UploadPage() {
                         checked={comment.checked} 
                         onChange={() => handleCheckboxChange(index)} 
                     />
-                    {comment.text}
+                    {comment.content}
                 </div>
             );
         }));

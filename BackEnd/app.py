@@ -145,9 +145,10 @@ def postComments():
     except Exception as e:
         return abort(500, f"Something wrong happened in the server: {e}")
 
-@app.route("/get_comments/<resume_uuid>", methods=["GET"])
-def getComments(resume_uuid: str):
-    return api.get_comment_by_uuid(resume_uuid)
+@app.route("/get_comments", methods=["GET"])
+def getComments():
+    resume_uuid = request.args.get('uuid')
+    return api.get_comment_by_resume_uuid(resume_uuid)
         
 
 # send the chosen comments to process
@@ -158,7 +159,7 @@ def process():
             return abort(400, "Request body must be JSON")
 
         data = request.json
-        s3URL, commentUUIDs = data["s3URL"], data["commentUUIDs"]
+        s3URL, comments= data["s3URL"], data["comment"]
         parts = s3URL.split("/")
 
         if not parts:
@@ -174,8 +175,6 @@ def process():
             fileStream = BytesIO(fileData)
             fileStream.seek(0)
 
-            # query the list of comments associate with the UUIDs from the database
-            comments = api.get_comment_by_uuid(commentUUIDs)
         
             latexResult = get_latex(comments, fileStream)
             
