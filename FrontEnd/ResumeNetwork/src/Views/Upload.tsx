@@ -38,13 +38,13 @@ export default function UploadPage() {
             <h3 className="center-item description">
                 Need to share your resume to others and receive feedback? But too lazy to change it?
                 We got you covered. We provide a resume sharing platform where you can share your resume, receive feedback,
-                and most importantly, get AI-generated updates. Simply upload the PDF file below, share the link with others and let the magic do the rest :)
+                and most importantly, get AI-generated updates. Simply upload the LaTex file below, share the link with others and let the magic do the rest :)
             </h3>
             <form className="upload-form" encType="multipart/form-data">
                 <label className="file-upload-label">
                     <input 
                         type="file" 
-                        accept=".pdf" 
+                        accept=".tex" 
                         name='resume' 
                         className="file-input" 
                         onChange={(event) => setUploadedFiles(event.target.files![0])} 
