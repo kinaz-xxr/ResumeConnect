@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from io import BytesIO
 from BackEnd.neurelo.repos import Api
 
-from utils import get_latex, allowed_file, latex_to_pdf
+from BackEnd.utils import get_latex, allowed_file, latex_to_pdf
 
 app = Flask(__name__)
 
@@ -51,7 +51,6 @@ def upload():
             return (
                 jsonify(
                     {
-                        "s3URL": presigned_url,
                         "uuid": file_uuid
                     }
                 ),
@@ -62,33 +61,19 @@ def upload():
 
 
 # get the pdf file from the s3 bucket
-@app.route("/getFile", methods=["GET"])
-def getFile():
-    s3URL = request.args.get("s3URL")
+@app.route("/getS3URL", methods=["GET"])
+def getS3URL():
+    uuid = request.args.get("uuid")
+    # get s3 link by uuid
+    s3URL = api.get_resume_from_uuid(uuid=uuid)["data"]["url"]
 
     if not s3URL:
         return abort(400, "Missing s3 URL in the query parameter")
 
-    parts = s3URL.split("/")
-
-    if not parts:
-        return abort(400, "Invalid S3 URL format.")
-
-    # Extract bucket name and object key
-    bucketName = parts[2].split(".")[0]
-    objectKey = "/".join(parts[3:])
-
     try:
-        s3Object = s3.get_object(Bucket=bucketName, Key=objectKey)
-        fileData = s3Object["Body"].read()
-        fileStream = BytesIO(fileData)
-        fileStream.seek(0)
-        return send_file(
-            fileStream,
-            as_attachment=True,
-            download_name=objectKey.split("/")[-1],
-            mimetype="application/pdf",
-        )
+        return jsonify({
+            "s3URL" : s3URL
+        }), 200
 
     except s3.exceptions.NoSuchKey:
         return abort(404, "File not found in the S3 Bucket")
