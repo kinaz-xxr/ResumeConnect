@@ -21,7 +21,7 @@ s3 = boto3.client(
     config=Config(signature_version="s3v4", region_name="us-east-2"),
 )
 app.config["CORS_HEADERS"] = "Content-Type"
-ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif"}
+ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif", "tex"}
 
 load_dotenv("./.env")
 
@@ -53,7 +53,7 @@ def upload():
             file_uuid = uuid.uuid4()
             filename = str(file_uuid) + "_" + file.filename
             s3.upload_fileobj(file, "resumenetworkmainresumebucket", filename)
-            presigned_url = create_presigned_url(filename)
+            presigned_url = create_presigned_url(filename)  
 
             api.upload_resume(uuid = str(file_uuid), url = presigned_url)
             return (
