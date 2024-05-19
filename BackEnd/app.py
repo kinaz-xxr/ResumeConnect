@@ -9,11 +9,13 @@ from dotenv import load_dotenv
 from io import BytesIO
 import re
 from BackEnd.neurelo.repos import Api
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-
 api = Api()
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
+
 s3 = boto3.client(
     "s3",
     aws_access_key_id=os.environ.get("AWS_ACCESS_KEY"),
@@ -104,6 +106,24 @@ def getFile():
     except Exception as e:
         return abort(500, f"Something wrong happened in the server: {e}")
 
+@socketio.on("connect")
+def connected():
+    """event listener when client connects to the server"""
+    print(request.sid)
+    print("client has connected")
+    emit("connect",{"data":f"id: {request.sid} is connected"})
+
+@socketio.on('data')
+def handle_message(data):
+    """event listener when client types a message"""
+    print("data from the front end: ",str(data))
+    emit("data",{'data':data,'id':request.sid},broadcast=True)
+
+@socketio.on("disconnect")
+def disconnected():
+    """event listener when client disconnects to the server"""
+    print("user disconnected")
+    emit("disconnect",f"user {request.sid} disconnected",broadcast=True)
 
 # send the chosen comments to process
 @app.route("/process", methods=["POST"])
