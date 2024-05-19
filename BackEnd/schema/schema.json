@@ -1,0 +1,51 @@
+{
+    "objects": {
+        "resume": {
+            "properties": {
+                "uuid": {
+                    "type": "string", 
+                    "sourceName": "_id",
+                    "identifier": true
+                }, 
+                "url": {
+                    "type": "string"
+                }, 
+                "comment": {
+                    "nullable": true, 
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/objects/comment"
+                    }
+                }
+            }
+        }, 
+        "comment": {
+            "properties": {
+                
+                "resume": {
+                    "$ref": "#/objects/resume",
+                    "relation": {
+                        "attrKey": [
+                            "resume_uuid"
+                        ], 
+                        "foreignAttrKey": [
+                            "uuid"
+                        ]
+                    }
+                }
+                , 
+                "resume_uuid": {
+                    "type": "string"
+                }, 
+                "uuid": {
+                    "sourceName": "_id",
+                    "type": "string", 
+                    "identifier": true
+                },
+                "content": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}   

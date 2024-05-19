@@ -8,8 +8,11 @@ import os
 from dotenv import load_dotenv
 from io import BytesIO
 import re
+from BackEnd.neurelo.repos import Api
 
 app = Flask(__name__)
+
+api = Api()
 CORS(app)
 s3 = boto3.client(
     "s3",
@@ -51,11 +54,11 @@ def upload():
             filename = str(file_uuid) + "_" + file.filename
             s3.upload_fileobj(file, "resumenetworkmainresumebucket", filename)
             presigned_url = create_presigned_url(filename)
-            return jsonify({
-                "s3URL" : presigned_url,
-            }), 200
+
+            api.upload_resume(uuid = str(file_uuid), url = presigned_url)
+            return "File successfully uploaded", 200
         else:
-            return abort(400, "File type not allowed!")
+            return "File type not allowed", 400
 
 
 # get the pdf file from the s3 bucket
