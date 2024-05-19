@@ -83,9 +83,9 @@ export default function UploadPage() {
             <div className="pdf-viewer">
             {pdfBlob && (
                 <iframe
-                    src={URL.createObjectURL(pdfBlob)}
+                    src={URL.createObjectURL(pdfBlob)+ "#toolbar=0&navpanes=0&scrollbar=0"}
                     width="100%"
-                    height="500px"
+                    height="100%"
                     title="PDF Document"
                 />
             )}
