@@ -2,6 +2,7 @@ import { ReactElement, useEffect, useRef, useState } from "react";
 import './Comment.css'; 
 import { useLocation } from "react-router-dom";
 import { Viewer } from '@react-pdf-viewer/core';
+import Loading from './Loading';
 
 interface Comment {
     content: string;
@@ -13,6 +14,7 @@ export default function UploadPage() {
     const [renderedComments, setRenderedComments] = useState<ReactElement[]>([]);
     const [resumeUUID, setResumeUUID] = useState("");
     const [pdfBlob, setPdfBlob] = useState<Blob>();
+    const [isLoading, setIsLoading] = useState(false); 
     const formRef = useRef<HTMLFormElement>(null);
 
     useEffect(() => {
@@ -56,6 +58,7 @@ export default function UploadPage() {
     }
 
     const getRecommendations = () => {
+        setIsLoading(true); 
         const checkedComments = comments.filter((comment) =>comment.checked === true)
         fetch("http://127.0.0.1:5000/process", {
             method: "POST", 
@@ -67,7 +70,9 @@ export default function UploadPage() {
         }).then( res => res.blob() )
         .then( blob => {
           var file = window.URL.createObjectURL(blob);
+          setIsLoading(false); 
           window.location.assign(file);
+          
         })
     }
 
@@ -133,6 +138,7 @@ export default function UploadPage() {
                     <button className="button-color" onClick={getRecommendations}>Download</button>
                 </div>
             </div>
+            {isLoading ? <Loading /> : null}
         </div>
     );
 }
