@@ -65,8 +65,6 @@ def upload():
 def getS3URL():
     uuid = request.args.get("uuid")
     # get s3 link by uuid
-    print(uuid)
-    print(api.get_resume_from_uuid(uuid=uuid))
     s3URL = api.get_resume_from_uuid(uuid=uuid)["data"]["url"]
 
     if not s3URL:

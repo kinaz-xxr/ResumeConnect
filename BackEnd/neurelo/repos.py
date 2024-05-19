@@ -14,6 +14,7 @@ class Api:
             "X-API-KEY": os.environ.get("NEURELO_API_KEY"),
             "Content-Type": "application/json"
         }
+
         data = {
             "uuid": uuid,
             "url": s3_url
@@ -60,14 +61,15 @@ class Api:
         response = requests.post(url, headers=headers, data=json.dumps(data))
     
     def get_resume_from_uuid(self, uuid: str):
-        url = "https://us-west-2.aws.neurelo.com/rest/resume/b1769692-74a2-4d45-a064-6990e2c07c31?"
+        url = "https://us-west-2.aws.neurelo.com/rest/resume/" + uuid
+        print(url)
         headers = {
             "X-API-KEY": os.environ.get("NEURELO_API_KEY")
         }
 
         response = requests.get(url, headers=headers)
 
-        return json.loads(response.json())
+        return response.json()
 
 
         
