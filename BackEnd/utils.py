@@ -25,9 +25,10 @@ def allowed_file(filename):
 
 def latex_to_pdf(latex_string, output_file):
     try:
+        print(f"Latex string: {latex_string}")
         with open("tmep.tex", "w") as f:
             f.write(latex_string)
-        
+        print("Hello")
         # Run pdflatex to convert .tex to .pdf
         subprocess.run(["pdflatex", "-interaction=nonstopmode", "temp.tex"])
 
