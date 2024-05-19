@@ -21,8 +21,6 @@ class Api:
 
         response = requests.post(url, headers=headers, data=json.dumps(data))   
 
-        print(response.status_code)
-        print(response.text)
 
     def get_comment_by_uuid(self, list_of_uuid: [str]): 
         url = "https://us-west-2.aws.neurelo.com/rest/comment/__groupBy"
@@ -60,6 +58,16 @@ class Api:
         }
 
         response = requests.post(url, headers=headers, data=json.dumps(data))
+    
+    def get_resume_from_uuid(self, uuid: str):
+        url = "https://us-west-2.aws.neurelo.com/rest/resume/b1769692-74a2-4d45-a064-6990e2c07c31?"
+        headers = {
+            "X-API-KEY": os.environ.get("NEURELO_API_KEY")
+        }
+
+        response = requests.get(url, headers=headers)
+
+        return json.loads(response.json())
 
 
         
